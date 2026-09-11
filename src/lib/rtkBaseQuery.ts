@@ -41,6 +41,27 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
   let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
+    // On static preview environments (GitHub Pages), do not expire session on 401
+    if (typeof window !== "undefined" && window.location.hostname.includes("github.io")) {
+      const urlStr = typeof args === "string" ? args : (args && args.url ? args.url : "");
+      const params = typeof args === "object" ? ((args as any).params || (args as any).body) : undefined;
+      const mock = getMockFallbackResponse(urlStr, params);
+      if (mock) {
+        return mock as any;
+      }
+      return {
+        data: {
+          success: true,
+          data: [],
+          items: [],
+          totals: {},
+          kpis: {},
+          pagination: { page: 1, limit: 25, total: 0, totalPages: 1 },
+          counts: { myAdded: 0, myInvited: 0, myRegistered: 0 },
+        },
+      } as any;
+    }
+
     // The other way back in. Without this check a single request from an idle tab would
     // refresh the token and revive a session that should already have ended.
     if (isSessionIdleExpired()) {
@@ -77,13 +98,15 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
             }
             return true;
           } else {
-            try {
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
-              localStorage.removeItem("isLoggedIn");
-              // Clear refresh timer
-              clearTokenRefreshTimer();
-            } catch {}
+            if (typeof window === "undefined" || !window.location.hostname.includes("github.io")) {
+              try {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                localStorage.removeItem("isLoggedIn");
+                // Clear refresh timer
+                clearTokenRefreshTimer();
+              } catch {}
+            }
             return false;
           }
         })();
@@ -117,7 +140,7 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
 
     if (isNetworkOrCorsError) {
       const urlStr = typeof args === "string" ? args : (args && args.url ? args.url : "");
-      const params = typeof args === "object" ? (args as any).params : undefined;
+      const params = typeof args === "object" ? ((args as any).params || (args as any).body) : undefined;
       const mock = getMockFallbackResponse(urlStr, params);
       if (mock) {
         return mock as any;

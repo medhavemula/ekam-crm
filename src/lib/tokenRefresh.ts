@@ -49,6 +49,11 @@ export function scheduleTokenRefresh(accessToken: string, refreshToken: string) 
     tokenRefreshTimer = null;
   }
 
+  // On static preview environments (e.g. GitHub Pages), avoid refresh timers
+  if (typeof window !== "undefined" && window.location.hostname.includes("github.io")) {
+    return;
+  }
+
   const expirationTime = getTokenExpiration(accessToken);
   if (!expirationTime) return;
 

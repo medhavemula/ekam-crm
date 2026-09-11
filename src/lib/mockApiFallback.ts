@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Fallback dataset for static preview environments (such as GitHub Pages)
  * where the backend server's CORS configuration restricts browser requests.
  * Contains the snapshot from the live production database so all metrics,
@@ -9,6 +9,93 @@
 export function getMockFallbackResponse(urlStr: string, params?: any): { data: any } | null {
   if (!urlStr) return null;
   const url = urlStr.replace(/^\/+/, "");
+
+  // Auth: Login fallback for static preview environments (GitHub Pages)
+  if (url.startsWith("auth/login")) {
+    const rawEmail = params?.email ? String(params.email).trim().toLowerCase() : "";
+    const isSuper = !rawEmail || rawEmail.includes("admin") || rawEmail.includes("superadmin");
+    const role = isSuper ? "SUPER_ADMIN" : "USER";
+    const name = isSuper ? "Super Admin" : "Ekam Member";
+    const email = rawEmail || (isSuper ? "superadmin@ekam.local" : "member@ekam.local");
+    const demoToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlbW8tdXNlci0wMDEiLCJlbWFpbCI6InN1cGVyYWRtaW5AZWthbS5sb2NhbCIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImV4cCI6MjUzNzQzODgwMH0.mockSignature";
+
+    return {
+      data: {
+        success: true,
+        accessToken: demoToken,
+        refreshToken: "demo-refresh-token",
+        role,
+        roles: [role],
+        name,
+        email,
+        _id: "demo-user-001",
+        isEmailVerified: true,
+        isApproved: true,
+        status: "active",
+        assignments: [{ role }],
+        moduleAccess: { business: true, professional: true, social: true },
+      },
+    };
+  }
+
+  // Auth: Token Refresh fallback
+  if (url.startsWith("auth/refresh")) {
+    const demoToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlbW8tdXNlci0wMDEiLCJlbWFpbCI6InN1cGVyYWRtaW5AZWthbS5sb2NhbCIsInJvbGUiOiJTVVBFUl9BRE1JTiIsImV4cCI6MjUzNzQzODgwMH0.mockSignature";
+    return {
+      data: {
+        success: true,
+        accessToken: demoToken,
+        refreshToken: "demo-refresh-token",
+      },
+    };
+  }
+
+  // Auth: Logout fallback
+  if (url.startsWith("auth/logout")) {
+    return {
+      data: {
+        success: true,
+        message: "Logged out successfully",
+      },
+    };
+  }
+
+  // User Profile / Current Authenticated User fallback
+  if (url.startsWith("users/me") || url.startsWith("account/me") || url.startsWith("users/profile")) {
+    const storedRole = (typeof localStorage !== "undefined" && localStorage.getItem("userRole")) || "SUPER_ADMIN";
+    const storedEmail = (typeof localStorage !== "undefined" && localStorage.getItem("userEmail")) || "superadmin@ekam.local";
+    const storedName = (typeof localStorage !== "undefined" && localStorage.getItem("userName")) || "Super Admin";
+    return {
+      data: {
+        success: true,
+        data: {
+          _id: "demo-user-001",
+          name: storedName,
+          email: storedEmail,
+          isEmailVerified: true,
+          isApproved: true,
+          status: "active",
+          assignments: [{ role: storedRole }],
+          basicInfo: {
+            chapter: "Apex Chapter",
+          },
+          business: {
+            businessName: "Ekam Global Enterprise",
+          },
+          professional: {
+            role: storedRole,
+          },
+          moduleAccess: {
+            business: true,
+            professional: true,
+            social: true,
+          },
+        },
+      },
+    };
+  }
 
   // Super Admin KPIs
   if (url.startsWith("admin/kpis")) {
