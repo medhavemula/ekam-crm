@@ -1,0 +1,187 @@
+name: Deploy to Production
+
+# Ships every push to main to S3 + CloudFront. Automates Parts 3, 4 and 6 of
+# MANUAL-DEPLOY.md — including the cache headers and the invalidation, the two
+# steps that are easiest to forget by hand.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deploys interleave their S3 syncs. Queue rather than cancel: a
+# cancelled run could leave assets uploaded but index.html stale.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node 22, not 18 like the backend: Vite 7 requires >= 20.19.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Vite inlines VITE_* values at build time, so these must exist before
+      # `npm run build`, not at runtime. .env.production is created here and
+      # never committed.
+      - name: Write build-time environment
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+          VITE_IDLE_TIMEOUT_MS: ${{ secrets.VITE_IDLE_TIMEOUT_MS }}
+          VITE_IDLE_WARNING_MS: ${{ secrets.VITE_IDLE_WARNING_MS }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
+          VITE_FIREBASE_VAPID_KEY: ${{ secrets.VITE_FIREBASE_VAPID_KEY }}
+        run: |
+          : > .env.production
+
+          # Omit empty values rather than writing KEY= — an empty string is a
+          # different thing to the app than an absent variable.
+          add() { [ -n "$2" ] && printf '%s=%s\n' "$1" "$2" >> .env.production; return 0; }
+
+          missing=""
+          for key in VITE_API_BASE_URL VITE_API_URL VITE_WS_URL; do
+            [ -z "${!key}" ] && missing="$missing $key"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing required repository secret(s):$missing — see DEPLOY.md"
+            exit 1
+          fi
+
+          add VITE_API_BASE_URL "$VITE_API_BASE_URL"
+          add VITE_API_URL      "$VITE_API_URL"
+          add VITE_WS_URL       "$VITE_WS_URL"
+
+          add VITE_IDLE_TIMEOUT_MS "$VITE_IDLE_TIMEOUT_MS"
+          add VITE_IDLE_WARNING_MS "$VITE_IDLE_WARNING_MS"
+
+          # All eight are optional — with none set the app simply runs without
+          # push notifications.
+          add VITE_FIREBASE_API_KEY             "$VITE_FIREBASE_API_KEY"
+          add VITE_FIREBASE_AUTH_DOMAIN         "$VITE_FIREBASE_AUTH_DOMAIN"
+          add VITE_FIREBASE_PROJECT_ID          "$VITE_FIREBASE_PROJECT_ID"
+          add VITE_FIREBASE_STORAGE_BUCKET      "$VITE_FIREBASE_STORAGE_BUCKET"
+          add VITE_FIREBASE_MESSAGING_SENDER_ID "$VITE_FIREBASE_MESSAGING_SENDER_ID"
+          add VITE_FIREBASE_APP_ID              "$VITE_FIREBASE_APP_ID"
+          add VITE_FIREBASE_MEASUREMENT_ID      "$VITE_FIREBASE_MEASUREMENT_ID"
+          add VITE_FIREBASE_VAPID_KEY           "$VITE_FIREBASE_VAPID_KEY"
+
+          # Derived, not configured: stamps the build with its commit so a
+          # deployed bundle can be traced back to source.
+          add VITE_APP_VERSION "web-${GITHUB_SHA::7}"
+          # Dev-only overlay; never on in production.
+          add VITE_ENABLE_LOCATOR "false"
+
+          echo "Wrote .env.production with $(wc -l < .env.production) variable(s):"
+          cut -d= -f1 .env.production | sed 's/^/  /'
+
+      - name: Build
+        run: |
+          npm run build
+          test -f dist/index.html || { echo "::error::build produced no dist/index.html"; exit 1; }
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          # Secrets pasted through the GitHub UI routinely pick up a trailing
+          # space or newline. A bucket name cannot contain whitespace, so
+          # stripping it is always safe — and without this the AWS CLI fails
+          # with an opaque "Invalid bucket name" regex dump.
+          S3_BUCKET="$(printf '%s' "$S3_BUCKET" | tr -d '[:space:]')"
+
+          if [ -z "$S3_BUCKET" ]; then
+            echo "::error::S3_BUCKET secret is not set — see DEPLOY.md"
+            exit 1
+          fi
+
+          case "$S3_BUCKET" in
+            s3://*)
+              echo "::error::S3_BUCKET must be the bucket NAME only, without the s3:// prefix."
+              exit 1 ;;
+          esac
+
+          echo "Target bucket: ${S3_BUCKET}"
+          # Pass 1: hashed assets first, cached forever.
+          #
+          # Order matters. index.html references the new hashed filenames, so
+          # the assets must already exist when it goes up. Uploading index.html
+          # first would leave a window where visitors get an HTML file pointing
+          # at JS that isn't in the bucket yet.
+          #
+          # --delete reaps hashed files from older builds. The two excluded
+          # files are protected from deletion by the same --exclude flags.
+          echo "==> Syncing immutable assets"
+          aws s3 sync dist/ "s3://${S3_BUCKET}/" \
+            --delete \
+            --exclude "index.html" \
+            --exclude "push-sw.js" \
+            --cache-control "public,max-age=31536000,immutable"
+
+          # Pass 2: the two files that must never be cached. index.html is the
+          # pointer to everything else, and push-sw.js is how browsers learn
+          # about service-worker updates. A stale copy of either pins users to
+          # an old release.
+          echo "==> Uploading no-cache entrypoints"
+          aws s3 cp dist/index.html "s3://${S3_BUCKET}/index.html" \
+            --cache-control "no-cache,no-store,must-revalidate" \
+            --content-type "text/html"
+
+          if [ -f dist/push-sw.js ]; then
+            aws s3 cp dist/push-sw.js "s3://${S3_BUCKET}/push-sw.js" \
+              --cache-control "no-cache,no-store,must-revalidate" \
+              --content-type "application/javascript"
+          fi
+
+      - name: Invalidate CloudFront
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          CLOUDFRONT_DISTRIBUTION_ID="$(printf '%s' "$CLOUDFRONT_DISTRIBUTION_ID" | tr -d '[:space:]')"
+
+          if [ -z "$CLOUDFRONT_DISTRIBUTION_ID" ]; then
+            echo "::warning::CLOUDFRONT_DISTRIBUTION_ID is not set. Files are in S3, but CloudFront will keep serving the previous version from cache until its TTL expires."
+            exit 0
+          fi
+
+          ID=$(aws cloudfront create-invalidation \
+                 --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+                 --paths "/*" \
+                 --query 'Invalidation.Id' --output text)
+          echo "Created invalidation $ID, waiting for it to complete..."
+
+          # Wait, so a green check means users are actually seeing the new
+          # build rather than just that the upload finished.
+          aws cloudfront wait invalidation-completed \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --id "$ID"
+          echo "Invalidation complete — new version is live."

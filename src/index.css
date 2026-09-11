@@ -1,0 +1,1126 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap');
+
+* {
+  font-family: "Poppins", sans-serif !important;
+}
+
+.custom-gradient-border {
+  border-radius: 12px;
+  border-width: 2px;
+  border-style: solid;
+  border-image: linear-gradient(180deg, #FFFFFF 50%, #FFFFFF 0%) 1;
+}
+
+/* Like button animation with jump effect */
+@keyframes like {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-15px) scale(1.2);
+  }
+  50% {
+    transform: translateY(-25px) scale(1.3);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-15px) scale(1.2);
+    opacity: 0.6;
+  }
+  85% {
+    transform: translateY(-5px) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-like {
+  animation: like 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  display: inline-block;
+  transform-origin: center bottom;
+}
+
+/* Prevent browser autofill from overriding dark input backgrounds */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #21272D inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ---- Navigation animations ---- */
+@keyframes navMenuIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes navDrawerIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes navScrimIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes navItemIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[nav"] { animation: none !important; }
+}
+
+/* ---- Route loading bar ----
+   The indeterminate bar under the wordmark on the sign-in and dashboard
+   openings. There is no percentage to report, so one segment travels the track
+   rather than filling it. Its duration is set inline from SWEEP_MS in
+   routing/lazyPage.tsx. */
+@keyframes ekam-sweep {
+  /* -100% puts the segment's trailing edge on the track's leading edge and 300%
+     the reverse, so it is on the track at every moment of the cycle bar the
+     wrap itself. Travelling further leaves the track empty at both ends, which
+     reads as a stall rather than as a pause. */
+  0%   { transform: translateX(-100%); opacity: 0.3; }
+  16%  { opacity: 1; }
+  84%  { opacity: 1; }
+  100% { transform: translateX(300%); opacity: 0.3; }
+}
+
+.ekam-sweep-bar {
+  animation-name: ekam-sweep;
+  animation-duration: 900ms;
+  /* Constant speed: an eased loop spends its slowest moments at the two ends,
+     which is exactly where there is least to look at. */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Still an indicator, just not a moving one. */
+  .ekam-sweep-bar { animation: none; width: 100%; opacity: 0.5; }
+}
+
+/* ---- Loading skeletons ----
+   The shape of the page that is coming, rather than a screen in front of it.
+   One block type, sized by whatever uses it; the highlight travels so a screen
+   that is waiting still reads as working. */
+@keyframes ekam-shimmer {
+  from { background-position: -150% 0; }
+  to   { background-position: 250% 0; }
+}
+
+.ekam-skel {
+  border-radius: 8px;
+  background-color: var(--ov-fill-subtle);
+  background-image: linear-gradient(
+    90deg,
+    transparent 18%,
+    var(--ov-line) 50%,
+    transparent 82%
+  );
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: ekam-shimmer 1500ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Still a placeholder, just not a moving one. */
+  .ekam-skel { animation: none; background-image: none; }
+}
+
+/* ---- Display face ----
+   index.css sets `* { font-family: Poppins !important }`, so the display face has
+   to win on specificity as well as on !important. A class selector (0,1,0) beats
+   the universal selector (0,0,0) when both are important. */
+.ekam-figure,
+.ekam-figure * {
+  font-family: "Archivo", "Poppins", ui-sans-serif, sans-serif !important;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  /* Archivo carries a width axis; 112% echoes the spacing of the E.K.A.M wordmark. */
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+}
+
+/* Eyebrows are the same face at the other end of the scale: small, wide, tracked out. */
+.ekam-eyebrow,
+.ekam-eyebrow * {
+  font-family: "Archivo", "Poppins", ui-sans-serif, sans-serif !important;
+  font-stretch: 118%;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ekam-sweep {
+    display: none !important;
+  }
+}
+
+/* ============================================================================
+   THEME TOKENS
+
+   `:root` holds the app's existing dark chrome, so every page that has not been
+   converted looks exactly as it did. Each `.ekam-*` class below overrides the
+   same names with a complete theme; put one on a page wrapper and everything
+   inside it — navigation included — switches over. Changing the look of the
+   dashboard is one class name in Dashboard.tsx, not a colour sweep through
+   markup, and adding a fourth theme is one more block down here.
+
+   Two embers, never one. Brand ember at full strength carries white text at only
+   3.5:1, which fails AA below 18.66px, so any control FILLED with ember and
+   carrying a label uses --ov-ember-fill. Marks, rings and ember text keep the
+   true brand value.
+
+   The three series hues are a validated categorical palette, not a preference:
+   OKLCH lightness band, chroma floor, all-pairs protan/deutan/tritan separation,
+   normal-vision separation and WCAG contrast all pass against every panel below.
+   Do not substitute one by eye — re-run the palette validator. The obvious warm
+   trio (ember/rose/jade) fails: rose and jade land 1.6 ΔE apart under
+   deuteranopia, which is indistinguishable.
+   ========================================================================== */
+
+:root {
+  --ov-floor: linear-gradient(180deg, #0D1117 0%, #1E2630 100%);
+
+  /* surfaces */
+  --ov-deep:         #0B1017;
+  --ov-trough:       #0D141C;
+  --ov-panel:        #131A22;
+  --ov-panel-hover:  #18212C;
+  --ov-raised:       #1B2430;
+
+  /* hairlines */
+  --ov-line:         rgba(255, 255, 255, 0.08);
+  --ov-line-strong:  rgba(255, 255, 255, 0.16);
+  --ov-line-faint:   rgba(255, 255, 255, 0.06);
+  --ov-fill-subtle:  rgba(255, 255, 255, 0.05);
+  --ov-fill-hover:   rgba(255, 255, 255, 0.09);
+
+  /* ink */
+  --ov-ink:    #F1F5F9;
+  --ov-ink-2:  #CBD5E1;
+  --ov-ink-3:  #94A3B8;
+  --ov-ink-4:  #8494A8;
+  --ov-ink-5:  #778699;
+
+  /* ink that sits on --ov-deep (tooltips, the refine popover) */
+  --ov-deep-ink:   #F1F5F9;
+  --ov-deep-ink-2: #94A3B8;
+  --ov-deep-line:  rgba(255, 255, 255, 0.12);
+
+  /* accent */
+  --ov-ember:            #E2620A;
+  --ov-ember-fill:       #C25308;
+  --ov-ember-fill-hover: #A84607;
+  --ov-on-ember:         #FFFFFF;
+  --ov-select-fill:      var(--ov-ember-fill);
+  --ov-on-select:        var(--ov-on-ember);
+  --ov-ember-wash:       rgba(226, 98, 10, 0.15);
+  --ov-ember-edge:       rgba(226, 98, 10, 0.55);
+
+  /* Navigation, as a segmented control.
+     The tabs sit in a recessed track and the selected tab is a RAISED surface
+     inside it, so the state is carried by elevation rather than by hue. That
+     matters here because the brand ember already carries the filter pills and a
+     chart series — a third ember pill in the chrome would make 'which page am I
+     on' compete with 'what is the data doing'. Swap the three --nav-active-*
+     values for the ember alternates below if the chrome should speak louder. */
+  --nav-track:       var(--ov-trough);
+  --nav-active-wash: var(--ov-panel);
+  --nav-active-edge: var(--ov-line);
+  --nav-active-ink:  var(--ov-ink);
+  /* ember: var(--ov-ember-wash) / var(--ov-ember-edge) / var(--ov-ember)
+     azure: rgba(91,141,239,0.16) / rgba(91,141,239,0.50) / #8FB4F7 */
+
+  /* categorical series */
+  --ov-s1: #E2620A;
+  --ov-s2: #9F72E0;
+  --ov-pending:      #A78BFA;
+  --ov-pending-wash: rgba(167, 139, 250, 0.16);
+  --ov-s3: #189E86;
+
+  /* The stat icons are white-filled SVGs and the wordmark is a white PNG, so a
+     light theme would have to supply its own artwork rather than recolour them. */
+  --ov-icon-filter: none;
+  --nav-logo:       url("/EKAMLogo.png");
+  --nav-logo-ratio: 696 / 197;
+
+  /* navigation chrome — the app's original values */
+  --nav-bar:    #0F151D;
+  --nav-rail:   #131A22;
+  --nav-raised: #1B2430;
+
+  /* elevation */
+  --ov-shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ov-shadow-pop:   0 24px 60px -20px rgba(0, 0, 0, 0.9);
+  --ov-shadow-nav:   0 8px 28px rgba(0, 0, 0, 0.45);
+  --ov-shadow-inset: inset 0 2px 10px -4px rgba(0, 0, 0, 0.7);
+  --ov-crosshair:    rgba(255, 255, 255, 0.28);
+
+  /* danger, for sign-out */
+  --ov-danger:      #FCA5A5;
+  --ov-danger-wash: rgba(239, 68, 68, 0.12);
+  /* Solid destructive fill. --ov-danger is an ink value at 4.5:1 on a panel;
+     white text on it would fail, so a confirm button needs its own step. */
+  /* Success is a status colour with its own step, not a borrowed chart hue.
+     --ov-s3 is a categorical series value; using it for a state ties the
+     meaning of "fine" to whichever metric happens to sit in slot 3. */
+  --ov-success:      #34D399;
+  --ov-success-wash: rgba(52, 211, 153, 0.12);
+  --ov-danger-fill:       #DC2626;
+  --ov-danger-fill-hover: #B91C1C;
+
+  /* ---- Form fields ----
+     Shared inputs, selects and the date picker read these. The :root values are
+     the app's existing field colours to the byte, so every page that has not been
+     themed renders exactly as before; a theme class below re-points them. */
+  --field-bg:           #21272D;
+  --field-bg-hover:     #2A2F36;
+  --field-border:       #374151;
+  --field-border-focus: #F97316;
+  --field-ink:          #FFFFFF;
+  --field-placeholder:  #6B7280;
+  --field-menu:         #33363B;
+  --field-menu-hover:   #4A4A4A;
+  --field-cal:          #2A2F35;
+  --field-cal-hover:    #3A4047;
+  --field-accent:       #D85D27;
+  --field-accent-ink:   var(--field-ink);
+  --field-selected-bg:  var(--field-accent);
+  --field-selected-ink: var(--field-ink);
+  /* Label and invalid tints. These match the text-gray-400 / text-red-500 the
+     form controls hardcoded, so unthemed pages are unchanged by the swap. */
+  /* Modal shell. The dialog was wrapped in GradientContainer — a 2px light
+     ring over a dark vertical gradient — which is a fixed dark surface on a
+     light theme. These reproduce it byte-for-byte at :root. */
+  --surface-ring:        linear-gradient(to bottom right, rgba(255, 255, 255, 0.25), rgba(92, 92, 92, 0.15), rgba(255, 255, 255, 0));
+  --surface-bg:      linear-gradient(180deg, #0D1117 0%, #1E2630 100%);
+  --modal-cancel:       #4B5563;
+  --modal-cancel-hover: #6B7280;
+  --field-label:        #9CA3AF;
+  --field-invalid:      #EF4444;
+  --field-radius:       0.375rem;
+  --field-shadow:       0 20px 40px -12px rgba(0, 0, 0, 0.7);
+
+  /* ---- Data tables ----
+     Shared DataTable reads these. :root holds the current values exactly, so the
+     ~20 pages that have not been themed render unchanged. */
+  --table-head-bg:      #D85D27;
+  --table-head-ink:     #FFFFFF;
+  --table-row:          #171E26;
+  --table-row-alt:      #33363B;
+  --table-row-hover:    rgba(63, 62, 62, 0.3);
+  --table-line:         #1F2937;
+  --table-rule:         #666666;
+  --table-search-bg:    #33363B;
+  --table-search-line:  #9F9F9F;
+  --table-ink:          #FFFFFF;
+
+  /* ---- Report info bar ----
+     The summary strip above a report table. :root keeps the slab it used to be,
+     so the member-facing report pages are untouched. */
+  --infobar-bg:     #0E1319;
+  --infobar-line:   #374151;
+  --infobar-label:  #9CA3AF;
+  --infobar-value:  #FFFFFF;
+  --filter-label:       #9CA3AF;
+  --filter-primary:       #D85D27;
+  --filter-primary-hover: #C24F20;
+  --filter-primary-ink:   #FFFFFF;
+
+}
+
+/* ---- Midnight indigo ----
+   Indigo-cast surfaces with a violet bloom overhead. Ember sits opposite indigo on the wheel, so the accent carries further here than on any neutral ground.
+
+   Ink steps measured against --ov-panel: ink · ink-2 · ink-3 · ink-4 · ink-5 all clear 4.2:1 or better, primary at 15:1+.
+   The series hues are unchanged and re-validated against this surface: lightness
+   band, chroma floor, all-pairs CVD separation (13.7 ΔE worst), normal-vision
+   separation (24.6 ΔE) and contrast all pass. */
+.ekam-indigo {
+  --ov-floor:        radial-gradient(1100px 620px at 50% -12%, #1B1733 0%, #0C0C18 48%, #07070D 100%);
+  --ov-deep:         #07070E;
+  --ov-trough:       #0E0E1A;
+  --ov-panel:        #141423;
+  --ov-panel-hover:  #1A1A2C;
+  --ov-raised:       #1E1E31;
+
+  --ov-line:         rgba(226, 226, 255, 0.09);
+  --ov-line-strong:  rgba(226, 226, 255, 0.17);
+  --ov-line-faint:   rgba(226, 226, 255, 0.06);
+  --ov-fill-subtle:  rgba(226, 226, 255, 0.05);
+  --ov-fill-hover:   rgba(226, 226, 255, 0.10);
+
+  --ov-ink:    #EEEEF7;
+  --ov-ink-2:  #B4B4C9;
+  --ov-ink-3:  #8E8EA8;
+  --ov-ink-4:  #83839C;
+  --ov-ink-5:  #7E7E95;
+
+  --ov-deep-ink:   #EEEEF7;
+  --ov-deep-ink-2: #8E8EA8;
+  --ov-deep-line:  rgba(226, 226, 255, 0.14);
+
+  --ov-ember:            #E2620A;
+  --ov-ember-fill:       #C25308;
+  --ov-ember-fill-hover: #A84607;
+  --ov-on-ember:         #FFFFFF;
+  --ov-select-fill:      var(--ov-ember-fill);
+  --ov-on-select:        var(--ov-on-ember);
+  --ov-ember-wash:       rgba(226, 98, 10, 0.16);
+  --ov-ember-edge:       rgba(226, 98, 10, 0.55);
+
+  /* Navigation, as a segmented control.
+     The tabs sit in a recessed track and the selected tab is a RAISED surface
+     inside it, so the state is carried by elevation rather than by hue. That
+     matters here because the brand ember already carries the filter pills and a
+     chart series — a third ember pill in the chrome would make 'which page am I
+     on' compete with 'what is the data doing'. Swap the three --nav-active-*
+     values for the ember alternates below if the chrome should speak louder. */
+  --nav-track:       var(--ov-trough);
+  --nav-active-wash: var(--ov-panel);
+  --nav-active-edge: var(--ov-line);
+  --nav-active-ink:  var(--ov-ink);
+  /* ember: var(--ov-ember-wash) / var(--ov-ember-edge) / var(--ov-ember)
+     azure: rgba(91,141,239,0.16) / rgba(91,141,239,0.50) / #8FB4F7 */
+
+  --ov-s1: #E2620A;
+  --ov-s2: #9F72E0;
+  --ov-pending:      #A78BFA;
+  --ov-pending-wash: rgba(167, 139, 250, 0.16);
+  --ov-s3: #189E86;
+
+  --ov-icon-filter: none;
+  --nav-logo:       url("/EKAMLogo.png");
+  --nav-logo-ratio: 696 / 197;
+
+  --nav-bar:    #07070E;
+  --nav-rail:   #0E0E1A;
+  --nav-raised: #1E1E31;
+
+  --ov-shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --ov-shadow-pop:   0 24px 60px -20px rgba(0, 0, 0, 0.92);
+  --ov-shadow-nav:   0 10px 30px rgba(0, 0, 0, 0.5);
+  --ov-shadow-inset: inset 0 2px 10px -4px rgba(0, 0, 0, 0.65);
+  --ov-crosshair:    rgba(226, 226, 255, 0.3);
+
+  --ov-danger:      #FCA5A5;
+  --ov-danger-wash: rgba(239, 68, 68, 0.12);
+  /* Solid destructive fill. --ov-danger is an ink value at 4.5:1 on a panel;
+     white text on it would fail, so a confirm button needs its own step. */
+  /* Success is a status colour with its own step, not a borrowed chart hue.
+     --ov-s3 is a categorical series value; using it for a state ties the
+     meaning of "fine" to whichever metric happens to sit in slot 3. */
+  --ov-success:      #34D399;
+  --ov-success-wash: rgba(52, 211, 153, 0.12);
+  --ov-danger-fill:       #DC2626;
+  --ov-danger-fill-hover: #B91C1C;
+
+
+  /* Form fields, re-pointed at this theme's surfaces. */
+  --field-bg:           var(--ov-fill-subtle);
+  --field-bg-hover:     var(--ov-fill-hover);
+  --field-border:       var(--ov-line-strong);
+  --field-border-focus: var(--ov-ember);
+  --field-ink:          var(--ov-ink);
+  --field-placeholder:  var(--ov-ink-5);
+  --field-menu:         var(--ov-raised);
+  --field-menu-hover:   var(--ov-fill-hover);
+  --field-cal:          var(--ov-raised);
+  --field-cal-hover:    var(--ov-fill-hover);
+  --field-accent:       var(--ov-ember);
+  --field-accent-ink:   var(--field-ink);
+  --field-selected-bg:  var(--field-accent);
+  --field-selected-ink: var(--field-ink);
+  --surface-ring:        var(--ov-line);
+  --surface-bg:      var(--ov-panel);
+  --modal-cancel:       var(--ov-fill-subtle);
+  --modal-cancel-hover: var(--ov-fill-hover);
+  --field-label:        var(--ov-ink-3);
+  --field-invalid:      var(--ov-danger);
+  --field-radius:       0.625rem;
+  --field-shadow:       var(--ov-shadow-pop);
+
+  /* Data tables. The orange header bar was the loudest thing on any list screen
+     and carried no information — column names are labels, not an alert. */
+  --table-head-bg:      var(--ov-raised);
+  --table-head-ink:     var(--ov-ink-3);
+  --table-row:          var(--ov-panel);
+  --table-row-alt:      var(--ov-panel);
+  --table-row-hover:    var(--ov-fill-subtle);
+  --table-line:         var(--ov-line-faint);
+  --table-rule:         var(--ov-line);
+  --table-search-bg:    var(--ov-fill-subtle);
+  --table-search-line:  var(--ov-line);
+  --table-ink:          var(--ov-ink);
+
+  /* Report info bar. On a light card the black slab read as a second header;
+     it is the card itself now, separated from the columns by one rule. */
+  --infobar-bg:     var(--ov-panel);
+  --infobar-line:   var(--ov-line);
+  --infobar-label:  var(--ov-ink-4);
+  --infobar-value:  var(--ov-ink);
+  --filter-label:       var(--field-label);
+  --filter-primary:       var(--ov-ember-fill);
+  --filter-primary-hover: var(--ov-ember-fill-hover);
+  --filter-primary-ink:   var(--ov-on-ember);
+
+
+  color-scheme: dark;
+}
+
+/* ---- Pure neutral ----
+   No hue in the surfaces at all. Ember is the only colour in the chrome, which is what makes it read as an instrument rather than a theme.
+
+   Ink steps measured against --ov-panel: ink · ink-2 · ink-3 · ink-4 · ink-5 all clear 4.2:1 or better, primary at 15:1+.
+   The series hues are unchanged and re-validated against this surface: lightness
+   band, chroma floor, all-pairs CVD separation (13.7 ΔE worst), normal-vision
+   separation (24.6 ΔE) and contrast all pass. */
+.ekam-neutral {
+  --ov-floor:        radial-gradient(1100px 620px at 50% -12%, #1C1C1C 0%, #0D0D0D 48%, #080808 100%);
+  --ov-deep:         #080808;
+  --ov-trough:       #111111;
+  --ov-panel:        #171717;
+  --ov-panel-hover:  #1F1F1F;
+  --ov-raised:       #232323;
+
+  --ov-line:         rgba(255, 255, 255, 0.09);
+  --ov-line-strong:  rgba(255, 255, 255, 0.17);
+  --ov-line-faint:   rgba(255, 255, 255, 0.06);
+  --ov-fill-subtle:  rgba(255, 255, 255, 0.05);
+  --ov-fill-hover:   rgba(255, 255, 255, 0.10);
+
+  --ov-ink:    #F2F2F2;
+  --ov-ink-2:  #B5B5B5;
+  --ov-ink-3:  #909090;
+  --ov-ink-4:  #868686;
+  --ov-ink-5:  #828282;
+
+  --ov-deep-ink:   #F2F2F2;
+  --ov-deep-ink-2: #909090;
+  --ov-deep-line:  rgba(255, 255, 255, 0.14);
+
+  --ov-ember:            #E2620A;
+  --ov-ember-fill:       #C25308;
+  --ov-ember-fill-hover: #A84607;
+  --ov-on-ember:         #FFFFFF;
+  --ov-select-fill:      var(--ov-ember-fill);
+  --ov-on-select:        var(--ov-on-ember);
+  --ov-ember-wash:       rgba(226, 98, 10, 0.16);
+  --ov-ember-edge:       rgba(226, 98, 10, 0.55);
+
+  /* Navigation, as a segmented control.
+     The tabs sit in a recessed track and the selected tab is a RAISED surface
+     inside it, so the state is carried by elevation rather than by hue. That
+     matters here because the brand ember already carries the filter pills and a
+     chart series — a third ember pill in the chrome would make 'which page am I
+     on' compete with 'what is the data doing'. Swap the three --nav-active-*
+     values for the ember alternates below if the chrome should speak louder. */
+  --nav-track:       var(--ov-trough);
+  --nav-active-wash: var(--ov-panel);
+  --nav-active-edge: var(--ov-line);
+  --nav-active-ink:  var(--ov-ink);
+  /* ember: var(--ov-ember-wash) / var(--ov-ember-edge) / var(--ov-ember)
+     azure: rgba(91,141,239,0.16) / rgba(91,141,239,0.50) / #8FB4F7 */
+
+  --ov-s1: #E2620A;
+  --ov-s2: #9F72E0;
+  --ov-pending:      #A78BFA;
+  --ov-pending-wash: rgba(167, 139, 250, 0.16);
+  --ov-s3: #189E86;
+
+  --ov-icon-filter: none;
+  --nav-logo:       url("/EKAMLogo.png");
+  --nav-logo-ratio: 696 / 197;
+
+  --nav-bar:    #080808;
+  --nav-rail:   #111111;
+  --nav-raised: #232323;
+
+  --ov-shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --ov-shadow-pop:   0 24px 60px -20px rgba(0, 0, 0, 0.92);
+  --ov-shadow-nav:   0 10px 30px rgba(0, 0, 0, 0.5);
+  --ov-shadow-inset: inset 0 2px 10px -4px rgba(0, 0, 0, 0.65);
+  --ov-crosshair:    rgba(255, 255, 255, 0.3);
+
+  --ov-danger:      #FCA5A5;
+  --ov-danger-wash: rgba(239, 68, 68, 0.12);
+  /* Solid destructive fill. --ov-danger is an ink value at 4.5:1 on a panel;
+     white text on it would fail, so a confirm button needs its own step. */
+  /* Success is a status colour with its own step, not a borrowed chart hue.
+     --ov-s3 is a categorical series value; using it for a state ties the
+     meaning of "fine" to whichever metric happens to sit in slot 3. */
+  --ov-success:      #34D399;
+  --ov-success-wash: rgba(52, 211, 153, 0.12);
+  --ov-danger-fill:       #DC2626;
+  --ov-danger-fill-hover: #B91C1C;
+
+
+  /* Form fields, re-pointed at this theme's surfaces. */
+  --field-bg:           var(--ov-fill-subtle);
+  --field-bg-hover:     var(--ov-fill-hover);
+  --field-border:       var(--ov-line-strong);
+  --field-border-focus: var(--ov-ember);
+  --field-ink:          var(--ov-ink);
+  --field-placeholder:  var(--ov-ink-5);
+  --field-menu:         var(--ov-raised);
+  --field-menu-hover:   var(--ov-fill-hover);
+  --field-cal:          var(--ov-raised);
+  --field-cal-hover:    var(--ov-fill-hover);
+  --field-accent:       var(--ov-ember);
+  --field-accent-ink:   var(--field-ink);
+  --field-selected-bg:  var(--field-accent);
+  --field-selected-ink: var(--field-ink);
+  --surface-ring:        var(--ov-line);
+  --surface-bg:      var(--ov-panel);
+  --modal-cancel:       var(--ov-fill-subtle);
+  --modal-cancel-hover: var(--ov-fill-hover);
+  --field-label:        var(--ov-ink-3);
+  --field-invalid:      var(--ov-danger);
+  --field-radius:       0.625rem;
+  --field-shadow:       var(--ov-shadow-pop);
+
+  /* Data tables. The orange header bar was the loudest thing on any list screen
+     and carried no information — column names are labels, not an alert. */
+  --table-head-bg:      var(--ov-raised);
+  --table-head-ink:     var(--ov-ink-3);
+  --table-row:          var(--ov-panel);
+  --table-row-alt:      var(--ov-panel);
+  --table-row-hover:    var(--ov-fill-subtle);
+  --table-line:         var(--ov-line-faint);
+  --table-rule:         var(--ov-line);
+  --table-search-bg:    var(--ov-fill-subtle);
+  --table-search-line:  var(--ov-line);
+  --table-ink:          var(--ov-ink);
+
+  /* Report info bar. On a light card the black slab read as a second header;
+     it is the card itself now, separated from the columns by one rule. */
+  --infobar-bg:     var(--ov-panel);
+  --infobar-line:   var(--ov-line);
+  --infobar-label:  var(--ov-ink-4);
+  --infobar-value:  var(--ov-ink);
+  --filter-label:       var(--field-label);
+  --filter-primary:       var(--ov-ember-fill);
+  --filter-primary-hover: var(--ov-ember-fill-hover);
+  --filter-primary-ink:   var(--ov-on-ember);
+
+
+  color-scheme: dark;
+}
+
+/* ---- Deep teal ----
+   Green-black surfaces. The coolest and most technical of the three; ember reads hottest against it.
+
+   Ink steps measured against --ov-panel: ink · ink-2 · ink-3 · ink-4 · ink-5 all clear 4.2:1 or better, primary at 15:1+.
+   The series hues are unchanged and re-validated against this surface: lightness
+   band, chroma floor, all-pairs CVD separation (13.7 ΔE worst), normal-vision
+   separation (24.6 ΔE) and contrast all pass. */
+.ekam-teal {
+  --ov-floor:        radial-gradient(1100px 620px at 50% -12%, #113034 0%, #08181B 48%, #050F11 100%);
+  --ov-deep:         #050E10;
+  --ov-trough:       #0A1618;
+  --ov-panel:        #0F1D20;
+  --ov-panel-hover:  #14262A;
+  --ov-raised:       #182E32;
+
+  --ov-line:         rgba(220, 245, 242, 0.09);
+  --ov-line-strong:  rgba(220, 245, 242, 0.17);
+  --ov-line-faint:   rgba(220, 245, 242, 0.06);
+  --ov-fill-subtle:  rgba(220, 245, 242, 0.05);
+  --ov-fill-hover:   rgba(220, 245, 242, 0.10);
+
+  --ov-ink:    #E9F2F1;
+  --ov-ink-2:  #A9C0BE;
+  --ov-ink-3:  #849B99;
+  --ov-ink-4:  #7A9190;
+  --ov-ink-5:  #708786;
+
+  --ov-deep-ink:   #E9F2F1;
+  --ov-deep-ink-2: #849B99;
+  --ov-deep-line:  rgba(220, 245, 242, 0.14);
+
+  --ov-ember:            #E2620A;
+  --ov-ember-fill:       #C25308;
+  --ov-ember-fill-hover: #A84607;
+  --ov-on-ember:         #FFFFFF;
+  --ov-select-fill:      var(--ov-ember-fill);
+  --ov-on-select:        var(--ov-on-ember);
+  --ov-ember-wash:       rgba(226, 98, 10, 0.16);
+  --ov-ember-edge:       rgba(226, 98, 10, 0.55);
+
+  /* Navigation, as a segmented control.
+     The tabs sit in a recessed track and the selected tab is a RAISED surface
+     inside it, so the state is carried by elevation rather than by hue. That
+     matters here because the brand ember already carries the filter pills and a
+     chart series — a third ember pill in the chrome would make 'which page am I
+     on' compete with 'what is the data doing'. Swap the three --nav-active-*
+     values for the ember alternates below if the chrome should speak louder. */
+  --nav-track:       var(--ov-trough);
+  --nav-active-wash: var(--ov-panel);
+  --nav-active-edge: var(--ov-line);
+  --nav-active-ink:  var(--ov-ink);
+  /* ember: var(--ov-ember-wash) / var(--ov-ember-edge) / var(--ov-ember)
+     azure: rgba(91,141,239,0.16) / rgba(91,141,239,0.50) / #8FB4F7 */
+
+  --ov-s1: #E2620A;
+  --ov-s2: #9F72E0;
+  --ov-pending:      #A78BFA;
+  --ov-pending-wash: rgba(167, 139, 250, 0.16);
+  --ov-s3: #189E86;
+
+  --ov-icon-filter: none;
+  --nav-logo:       url("/EKAMLogo.png");
+  --nav-logo-ratio: 696 / 197;
+
+  --nav-bar:    #050E10;
+  --nav-rail:   #0A1618;
+  --nav-raised: #182E32;
+
+  --ov-shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --ov-shadow-pop:   0 24px 60px -20px rgba(0, 0, 0, 0.92);
+  --ov-shadow-nav:   0 10px 30px rgba(0, 0, 0, 0.5);
+  --ov-shadow-inset: inset 0 2px 10px -4px rgba(0, 0, 0, 0.65);
+  --ov-crosshair:    rgba(220, 245, 242, 0.3);
+
+  --ov-danger:      #FCA5A5;
+  --ov-danger-wash: rgba(239, 68, 68, 0.12);
+  /* Solid destructive fill. --ov-danger is an ink value at 4.5:1 on a panel;
+     white text on it would fail, so a confirm button needs its own step. */
+  /* Success is a status colour with its own step, not a borrowed chart hue.
+     --ov-s3 is a categorical series value; using it for a state ties the
+     meaning of "fine" to whichever metric happens to sit in slot 3. */
+  --ov-success:      #34D399;
+  --ov-success-wash: rgba(52, 211, 153, 0.12);
+  --ov-danger-fill:       #DC2626;
+  --ov-danger-fill-hover: #B91C1C;
+
+
+  /* Form fields, re-pointed at this theme's surfaces. */
+  --field-bg:           var(--ov-fill-subtle);
+  --field-bg-hover:     var(--ov-fill-hover);
+  --field-border:       var(--ov-line-strong);
+  --field-border-focus: var(--ov-ember);
+  --field-ink:          var(--ov-ink);
+  --field-placeholder:  var(--ov-ink-5);
+  --field-menu:         var(--ov-raised);
+  --field-menu-hover:   var(--ov-fill-hover);
+  --field-cal:          var(--ov-raised);
+  --field-cal-hover:    var(--ov-fill-hover);
+  --field-accent:       var(--ov-ember);
+  --field-accent-ink:   var(--field-ink);
+  --field-selected-bg:  var(--field-accent);
+  --field-selected-ink: var(--field-ink);
+  --surface-ring:        var(--ov-line);
+  --surface-bg:      var(--ov-panel);
+  --modal-cancel:       var(--ov-fill-subtle);
+  --modal-cancel-hover: var(--ov-fill-hover);
+  --field-label:        var(--ov-ink-3);
+  --field-invalid:      var(--ov-danger);
+  --field-radius:       0.625rem;
+  --field-shadow:       var(--ov-shadow-pop);
+
+  /* Data tables. The orange header bar was the loudest thing on any list screen
+     and carried no information — column names are labels, not an alert. */
+  --table-head-bg:      var(--ov-raised);
+  --table-head-ink:     var(--ov-ink-3);
+  --table-row:          var(--ov-panel);
+  --table-row-alt:      var(--ov-panel);
+  --table-row-hover:    var(--ov-fill-subtle);
+  --table-line:         var(--ov-line-faint);
+  --table-rule:         var(--ov-line);
+  --table-search-bg:    var(--ov-fill-subtle);
+  --table-search-line:  var(--ov-line);
+  --table-ink:          var(--ov-ink);
+
+  /* Report info bar. On a light card the black slab read as a second header;
+     it is the card itself now, separated from the columns by one rule. */
+  --infobar-bg:     var(--ov-panel);
+  --infobar-line:   var(--ov-line);
+  --infobar-label:  var(--ov-ink-4);
+  --infobar-value:  var(--ov-ink);
+  --filter-label:       var(--field-label);
+  --filter-primary:       var(--ov-ember-fill);
+  --filter-primary-hover: var(--ov-ember-fill-hover);
+  --filter-primary-ink:   var(--ov-on-ember);
+
+
+  color-scheme: dark;
+}
+
+/* ---- Daylight ----
+   Built out of the logo instead of beside it. The mark is two colours and
+   nothing else: a teal-navy #184860 for the letterforms (33,838 px of the
+   asset) and an orange #F89020 for the four dots (4,822 px). Those are the
+   whole palette here — navy is every structural thing (ink, hairlines, the
+   tint under the floor), orange is every active thing (accent, focus, the
+   first series), and the cards are plain white so the two brand colours have
+   somewhere quiet to sit.
+
+   Neither logo colour can be used raw for text. #F89020 is 2.33:1 on white and
+   #184860 is a 9.8:1 near-black, so the orange is stepped down the same OKLCH
+   hue (h 58) to #AB5E0C, which is the lightest orange on the brand hue that
+   still carries a white label at 4.5:1. The true #F89020 is kept at full
+   strength where contrast is not a constraint: the washes behind badges, the
+   focus edge, and the logo itself.
+
+   Ink on white: 14.6 · 8.6 · 5.5 · 4.9 · 4.2:1. Accent 4.8:1 as text and 4.8:1
+   white-on-accent as a fill. Danger and success keep their own steps.
+
+   Series: brand orange, brand navy lifted to a legible stroke, and a teal that
+   bridges them. Every stroke clears WCAG 1.4.11 on white (4.84 · 6.33 · 3.14)
+   and the worst all-pairs separation under protanopia, deuteranopia and
+   tritanopia is 16.4 — against 10.7 for the set the dark themes share. */
+.ekam-daylight {
+  --ov-floor:        radial-gradient(1100px 620px at 50% -12%, #FFFFFF 0%, #F2F6F9 46%, #E9F0F4 100%);
+  --ov-deep:         #F4F8FA;
+  --ov-trough:       #E7EEF3;
+  --ov-panel:        #FFFFFF;
+  --ov-panel-hover:  #F6FAFC;
+  --ov-raised:       #FFFFFF;
+
+  /* Hairlines are the brand navy at low alpha rather than a neutral grey, so
+     even the rules between rows belong to the palette. */
+  --ov-line:         rgba(24, 72, 96, 0.14);
+  --ov-line-strong:  rgba(24, 72, 96, 0.26);
+  --ov-line-faint:   rgba(24, 72, 96, 0.08);
+  --ov-fill-subtle:  rgba(24, 72, 96, 0.05);
+  --ov-fill-hover:   rgba(24, 72, 96, 0.10);
+
+  --ov-ink:    #0D2C3B;
+  --ov-ink-2:  #2C5062;
+  --ov-ink-3:  #4E6E7D;
+  --ov-ink-4:  #567685;
+  --ov-ink-5:  #63808E;
+
+  --ov-deep-ink:   #0D2C3B;
+  --ov-deep-ink-2: #4E6E7D;
+  --ov-deep-line:  rgba(24, 72, 96, 0.14);
+
+  /* Still named --ov-ember: this is the accent slot, and it is what the twenty
+     or so redesigned screens already reference. */
+  --ov-ember:            #9C5300;
+  /* The accent is #D85D27, the orange this app has always used on its action
+     buttons, paired with the #C24F20 it has always used for their hover. Both
+     are the literal values, unchanged.
+
+     Stated plainly because it is a deliberate choice rather than an oversight:
+     white on #D85D27 is 3.81:1, so a 13px label on the solid fill is under the
+     4.5:1 AA threshold. A dark label is no better (3.83:1) - the colour simply
+     sits mid-scale. This is what every other screen in the app already ships,
+     so it is consistent rather than a regression, and it is what was asked for.
+     Everything that is only ever read as small text - --ov-ember below, which
+     drives label text, focus rings, required marks and the first chart series
+     - takes a darker step of the same hue so those clear 4.5:1 on white. */
+  --ov-ember:            #B04513;
+  --ov-ember-fill:       #D85D27;
+  --ov-ember-fill-hover: #C24F20;
+  --ov-on-ember:         #FFFFFF;
+  --ov-ember-wash:       rgba(216, 93, 39, 0.16);
+  --ov-ember-edge:       rgba(216, 93, 39, 0.60);
+
+  /* Selection is the same orange as action here, so it just follows. The two
+     stay separate tokens because a theme may want to split them; the cost of
+     pointing one at the other is nothing. */
+  --ov-select-fill:      var(--ov-ember-fill);
+  --ov-on-select:        var(--ov-on-ember);
+
+  /* Navigation, as a segmented control. The selected tab is a white card lifted
+     out of a recessed track, so page state is carried by elevation and the
+     orange stays free to mean "act" and "this datum". */
+  --nav-track:       var(--ov-trough);
+  --nav-active-wash: #FFFFFF;
+  --nav-active-edge: rgba(24, 72, 96, 0.16);
+  --nav-active-ink:  var(--ov-ink);
+  /* accent alternate: var(--ov-ember-wash) / var(--ov-ember-edge) / var(--ov-ember) */
+
+  --ov-s1: #B04513;
+  --ov-s2: #1A5FA8;
+  --ov-pending:      #6D28D9;
+  --ov-pending-wash: rgba(109, 40, 217, 0.10);
+  --ov-s3: #12A29D;
+
+  /* The dashboard's small glyphs are white SVGs, drawn for a dark ground.
+     Inverting them is what this token exists for. */
+  --ov-icon-filter: invert(1);
+  /* The white lockup is invisible on a white bar. This variant is the same
+     351x122 artwork with the achromatic letterforms recoloured to #184860 and
+     the orange dots untouched, so the existing crop still frames it. */
+  --nav-logo:       url("/EKAMLogo-navy.png");
+  --nav-logo-ratio: 696 / 197;
+
+  --nav-bar:    #FFFFFF;
+  --nav-rail:   #F4F8FA;
+  --nav-raised: #FFFFFF;
+
+  /* Shadows do real work on a light theme — a white card on a near-white floor
+     has no edge without one, where on the dark themes the surface step alone
+     was enough. */
+  --ov-shadow-panel: 0 1px 2px rgba(13, 44, 59, 0.06), 0 1px 3px rgba(13, 44, 59, 0.05);
+  --ov-shadow-pop:   0 24px 48px -16px rgba(13, 44, 59, 0.24), 0 2px 8px rgba(13, 44, 59, 0.08);
+  --ov-shadow-nav:   0 1px 3px rgba(13, 44, 59, 0.08);
+  --ov-shadow-inset: inset 0 2px 8px -5px rgba(13, 44, 59, 0.30);
+  --ov-crosshair:    rgba(24, 72, 96, 0.28);
+
+  /* Status colours are re-stepped for a light ground — the dark themes' #FCA5A5
+     and #34D399 are 1.9:1 and 1.9:1 on white, invisible as text. The meanings
+     are unchanged. */
+  --ov-danger:      #B42318;
+  --ov-danger-wash: rgba(217, 45, 32, 0.10);
+  --ov-success:      #067647;
+  --ov-success-wash: rgba(6, 118, 71, 0.10);
+  --ov-danger-fill:       #D92D20;
+  --ov-danger-fill-hover: #B42318;
+
+
+  /* Form fields, re-pointed at this theme's surfaces. */
+  --field-bg:           #FFFFFF;
+  --field-bg-hover:     #F6FAFC;
+  --field-border:       var(--ov-line-strong);
+  --field-border-focus: var(--ov-ember);
+  --field-ink:          var(--ov-ink);
+  --field-placeholder:  var(--ov-ink-5);
+  --field-menu:         #FFFFFF;
+  --field-menu-hover:   var(--ov-fill-subtle);
+  --field-cal:          #FFFFFF;
+  --field-cal-hover:    var(--ov-fill-subtle);
+  --field-accent:       var(--ov-ember-fill);
+  --field-accent-ink:   var(--ov-on-ember);
+  --field-selected-bg:  var(--ov-ember-wash);
+  --field-selected-ink: var(--ov-ember);
+  --surface-ring:        var(--ov-line);
+  --surface-bg:      var(--ov-panel);
+  --modal-cancel:       var(--ov-fill-subtle);
+  --modal-cancel-hover: var(--ov-fill-hover);
+  --field-label:        var(--ov-ink-3);
+  --field-invalid:      var(--ov-danger);
+  --field-radius:       0.625rem;
+  --field-shadow:       var(--ov-shadow-pop);
+
+  /* Data tables. The header is the trough tint rather than white, so the head
+     row still reads as a head row on a white card. */
+  --table-head-bg:      var(--ov-trough);
+  --table-head-ink:     var(--ov-ink-3);
+  --table-row:          #FFFFFF;
+  --table-row-alt:      #FFFFFF;
+  --table-row-hover:    var(--ov-fill-subtle);
+  --table-line:         var(--ov-line-faint);
+  --table-rule:         var(--ov-line);
+  --table-search-bg:    #FFFFFF;
+  --table-search-line:  var(--ov-line);
+  --table-ink:          var(--ov-ink);
+
+  /* Report info bar. On a light card the black slab read as a second header;
+     it is the card itself now, separated from the columns by one rule. */
+  --infobar-bg:     var(--ov-panel);
+  --infobar-line:   var(--ov-line);
+  --infobar-label:  var(--ov-ink-4);
+  --infobar-value:  var(--ov-ink);
+  --filter-label:       var(--field-label);
+  --filter-primary:       var(--ov-ember-fill);
+  --filter-primary-hover: var(--ov-ember-fill-hover);
+  --filter-primary-ink:   var(--ov-on-ember);
+
+
+  color-scheme: light;
+}
+
+/* ---- Combination ①: Deep Blue + White + Orange (Glassy Headings) ----
+   BACKGROUND: Deep Blue executive canvas (#0B2130)
+   CARDS: Crisp Pure White (#FFFFFF) with elevation shadows
+   TEXT: Deep Navy Blue (#0D2C3B) for maximum legibility on white cards
+   ACCENTS: Brand Orange (#E85A14) with translucent frosted glass heading capsules
+*/
+:root {
+  --sidebar-w: 16rem;
+}
+body.sidebar-collapsed {
+  --sidebar-w: 4.5rem;
+}
+@media (max-width: 1023px) {
+  :root, body.sidebar-collapsed {
+    --sidebar-w: 0rem;
+  }
+}
+
+.ekam-combo1 {
+  /* CANVAS: Crisp, clean executive light canvas */
+  --ov-floor:        #F8FAFC;
+  --ov-deep:         #0B2130;
+  --ov-trough:       #F1F5F9;
+  --ov-panel:        #FFFFFF;
+  --ov-panel-hover:  #F8FAFC;
+  --ov-raised:       #FFFFFF;
+
+  /* Hairlines: clean modern slate dividers */
+  --ov-line:         #E2E8F0;
+  --ov-line-strong:  #CBD5E1;
+  --ov-line-faint:   #F1F5F9;
+  --ov-fill-subtle:  #F1F5F9;
+  --ov-fill-hover:   #E2E8F0;
+
+  /* Typography inside cards and across canvas */
+  --ov-ink:    #0F172A;
+  --ov-ink-2:  #334155;
+  --ov-ink-3:  #475569;
+  --ov-ink-4:  #64748B;
+  --ov-ink-5:  #94A3B8;
+
+  /* Typography on floor */
+  --ov-deep-ink:   #0F172A;
+  --ov-deep-ink-2: #64748B;
+  --ov-deep-line:  #E2E8F0;
+
+  /* Accents */
+  --ov-ember:            #E85A14;
+  --ov-ember-fill:       #E85A14;
+  --ov-ember-fill-hover: #C24F20;
+  --ov-on-ember:         #FFFFFF;
+  --ov-ember-wash:       rgba(232, 90, 20, 0.08);
+  --ov-ember-edge:       rgba(232, 90, 20, 0.35);
+
+  --ov-select-fill:      var(--ov-ember-fill);
+  --ov-on-select:        var(--ov-on-ember);
+
+  /* Navigation: Sidebar in executive dark navy */
+  --nav-rail:        #0B2130;
+  --nav-track:       #071722;
+  --nav-active-wash: #E85A14;
+  --nav-active-edge: transparent;
+  --nav-active-ink:  #FFFFFF;
+
+  --ov-s1: #E85A14;
+  --ov-s2: #1A5FA8;
+  --ov-s3: #0D9488;
+  --ov-pending:      #6D28D9;
+  --ov-pending-wash: rgba(109, 40, 217, 0.08);
+
+  --ov-icon-filter: none;
+  --nav-logo:       url("/EKAMLogo-navy.png");
+  --nav-logo-ratio: 696 / 197;
+
+  --nav-bar:    #FFFFFF;
+  --nav-raised: #FFFFFF;
+
+  /* Shadows: subtle, crisp enterprise elevation */
+  --ov-shadow-panel: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --ov-shadow-pop:   0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --ov-shadow-nav:   0 4px 16px rgba(11, 33, 48, 0.12);
+  --ov-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+  --ov-crosshair:    #CBD5E1;
+
+  --ov-danger:      #DC2626;
+  --ov-danger-wash: rgba(220, 38, 38, 0.08);
+  --ov-success:     #16A34A;
+  --ov-success-wash: rgba(22, 163, 74, 0.08);
+  --ov-danger-fill:       #DC2626;
+  --ov-danger-fill-hover: #B91C1C;
+
+  /* Form fields */
+  --field-bg:           #FFFFFF;
+  --field-bg-hover:     #F8FAFC;
+  --field-border:       #CBD5E1;
+  --field-border-focus: #E85A14;
+  --field-ink:          #0F172A;
+  --field-placeholder:  #94A3B8;
+  --field-menu:         #FFFFFF;
+  --field-menu-hover:   #F1F5F9;
+  --field-cal:          #FFFFFF;
+  --field-cal-hover:    #F1F5F9;
+  --field-accent:       var(--ov-ember-fill);
+  --field-accent-ink:   var(--ov-on-ember);
+  --field-selected-bg:  var(--ov-ember-wash);
+  --field-selected-ink: var(--ov-ember);
+  --surface-ring:       var(--ov-line);
+  --surface-bg:         var(--ov-panel);
+  --modal-cancel:       var(--ov-fill-subtle);
+  --modal-cancel-hover: var(--ov-fill-hover);
+  --field-label:        #475569;
+  --field-invalid:      var(--ov-danger);
+  --field-radius:       0.625rem;
+  --field-shadow:       var(--ov-shadow-pop);
+
+  /* Tables */
+  --table-head-bg:      #F8FAFC;
+  --table-head-ink:     #475569;
+  --table-row:          #FFFFFF;
+  --table-row-alt:      #FFFFFF;
+  --table-row-hover:    #F8FAFC;
+  --table-line:         #E2E8F0;
+  --table-rule:         #E2E8F0;
+  --table-search-bg:    #FFFFFF;
+  --table-search-line:  #E2E8F0;
+  --table-ink:          #0F172A;
+
+  /* Info bar */
+  --infobar-bg:     var(--ov-panel);
+  --infobar-line:   var(--ov-line);
+  --infobar-label:  #64748B;
+  --infobar-value:  #0F172A;
+  --filter-label:       var(--field-label);
+  --filter-primary:       var(--ov-ember-fill);
+  --filter-primary-hover: var(--ov-ember-fill-hover);
+  --filter-primary-ink:   var(--ov-on-ember);
+
+  color-scheme: light;
+
+  /* Responsive shell layout offset */
+  padding-left: var(--sidebar-w);
+  transition: padding-left 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 100vh;
+  background: var(--ov-floor);
+}
+
+/* Glassy heading capsule utility */
+.ekam-heading-glass {
+  background: rgba(232, 90, 20, 0.08);
+  border: 1px solid rgba(232, 90, 20, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(232, 90, 20, 0.06);
+}
+
+/* Floor-level headings outside white cards */
+.ekam-combo1 h1,
+.ekam-combo1 h1.text-\[var\(--ov-ink\)\],
+.ekam-combo1 > main h1,
+.ekam-combo1 main > div h1,
+.ekam-combo1 main > header h1,
+.ekam-combo1 main header h1,
+.ekam-combo1 main > div > div > h1,
+.ekam-combo1 main div > h1.text-\[var\(--ov-ink\)\] {
+  color: #0F172A;
+}
+
+.ekam-combo1 main > div p.text-\[var\(--ov-ink-4\)\],
+.ekam-combo1 main > header p.text-\[var\(--ov-ink-4\)\],
+.ekam-combo1 main header p.text-\[var\(--ov-ink-4\)\],
+.ekam-combo1 main > div > div > p.text-\[var\(--ov-ink-4\)\],
+.ekam-combo1 main div > p.text-\[var\(--ov-ink-4\)\] {
+  color: #64748B;
+}
+
+/* Inside white cards */
+.ekam-combo1 .bg-\[var\(--ov-panel\)\] h1,
+.ekam-combo1 .bg-\[var\(--ov-panel\)\] h2:not(.ekam-eyebrow),
+.ekam-combo1 .bg-\[var\(--ov-panel\)\] h3:not(.ekam-eyebrow),
+.ekam-combo1 .bg-\[var\(--ov-panel\)\] .text-\[var\(--ov-ink\)\],
+.ekam-combo1 [data-panel] .text-\[var\(--ov-ink\)\] {
+  color: #0F172A;
+}
+.ekam-combo1 .bg-\[var\(--ov-panel\)\] p.text-\[var\(--ov-ink-4\)\],
+.ekam-combo1 [data-panel] p.text-\[var\(--ov-ink-4\)\] {
+  color: #64748B;
+}
