@@ -1083,6 +1083,25 @@ body.sidebar-collapsed {
   background: var(--ov-floor);
 }
 
+/* Preloader & Loading overlay centering reset: overrides sidebar offset so logo stays in dead middle center */
+.ekam-preloader,
+[role="status"].ekam-preloader,
+.ekam-combo1.ekam-preloader,
+.ekam-indigo.ekam-preloader,
+.ekam-neutral.ekam-preloader,
+.ekam-teal.ekam-preloader,
+.ekam-daylight.ekam-preloader {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100vw !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
 /* Glassy heading capsule utility */
 .ekam-heading-glass {
   background: rgba(232, 90, 20, 0.08);

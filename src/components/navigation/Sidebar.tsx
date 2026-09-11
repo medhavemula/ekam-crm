@@ -173,7 +173,7 @@ export const Sidebar: React.FC = () => {
           {isCollapsed ? (
             <div className="w-8 h-8 grid place-items-center">
               <img
-                src="/ekam-icon-white.png"
+                src={`${import.meta.env.BASE_URL}ekam-icon-white.png`}
                 alt="EKAM"
                 className="h-7 w-auto object-contain"
               />
@@ -181,7 +181,7 @@ export const Sidebar: React.FC = () => {
           ) : (
             <div className="flex flex-col min-w-0">
               <img
-                src="/EKAMLogo.png"
+                src={`${import.meta.env.BASE_URL}EKAMLogo.png`}
                 alt="EKAM"
                 className="h-6 w-auto max-w-[135px] object-contain object-left"
               />

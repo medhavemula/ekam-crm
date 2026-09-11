@@ -173,25 +173,27 @@ const readLook = (): Look => {
  * spinner. Cropped the way the navbar crops it.
  */
 function BrandScreen() {
+  const base = import.meta.env.BASE_URL || "/";
+  const logoUrl = `${base}EKAMLogo-navy.png`;
+
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <div className="flex flex-col items-center gap-5">
-        <span
-          aria-label="E.K.A.M"
-          role="img"
-          className="block h-8 w-[128px] shrink-0 select-none bg-no-repeat"
-          style={{
-            backgroundImage: "var(--nav-logo)",
-            backgroundSize: "contain",
-            backgroundPosition: "center",
-          }}
+    <div
+      className="flex flex-1 w-full h-full items-center justify-center p-0 m-0"
+      style={{ padding: 0, margin: 0 }}
+    >
+      <div className="flex flex-col items-center justify-center gap-5 text-center">
+        <img
+          src={logoUrl}
+          alt="E.K.A.M"
+          className="block h-9 w-auto max-w-[140px] shrink-0 select-none object-contain mx-auto"
+          loading="eager"
         />
         <span
           aria-hidden="true"
-          className="relative block h-[3px] w-32 overflow-hidden rounded-full bg-[var(--ov-fill-subtle)]"
+          className="relative block h-[3px] w-32 overflow-hidden rounded-full bg-slate-200 mx-auto"
         >
           <span
-            className="ekam-sweep-bar absolute inset-y-0 left-0 w-1/3 rounded-full bg-[var(--ov-ember-fill)]"
+            className="ekam-sweep-bar absolute inset-y-0 left-0 w-1/3 rounded-full bg-[#E85A14]"
             style={{ animationDuration: `${SWEEP_MS}ms` }}
           />
         </span>
@@ -211,8 +213,15 @@ function BrandScreen() {
 export function ArrivalScreen() {
   return (
     <div
-      className={`${ADMIN_THEME} flex min-h-screen flex-col`}
-      style={{ background: "var(--ov-floor)" }}
+      className={`${ADMIN_THEME} ekam-preloader fixed inset-0 z-[9999] flex h-screen w-screen flex-col items-center justify-center`}
+      style={{
+        background: "var(--ov-floor)",
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        margin: 0,
+      }}
       role="status"
       aria-live="polite"
     >
@@ -274,7 +283,7 @@ export function RouteLoadingOverlay() {
 
   return (
     <div
-      className={`${look.theme} fixed inset-0 z-[120] flex flex-col overflow-hidden`}
+      className={`${look.theme} ekam-preloader fixed inset-0 z-[120] flex h-screen w-screen flex-col items-center justify-center overflow-hidden`}
       style={{
         background: "var(--ov-floor)",
         opacity: shown ? 1 : 0,
@@ -282,6 +291,11 @@ export function RouteLoadingOverlay() {
         // The page beneath is half-swapped and covered; it should not take a
         // click, but an invisible overlay must not eat one either.
         pointerEvents: shown ? "auto" : "none",
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        margin: 0,
       }}
       role="status"
       aria-live="polite"

@@ -62,15 +62,10 @@ export const AuthCard: React.FC<{
   >
     <div className="w-full max-w-md">
       <div className="mb-7 flex flex-col items-center">
-        <span
-          aria-label="E.K.A.M"
-          role="img"
-          className="block h-10 w-[152px] select-none bg-no-repeat"
-          style={{
-            backgroundImage: "var(--nav-logo)",
-            backgroundSize: "contain",
-            backgroundPosition: "center",
-          }}
+        <img
+          src={`${import.meta.env.BASE_URL}EKAMLogo.png`}
+          alt="E.K.A.M"
+          className="block h-10 w-auto max-w-[152px] select-none object-contain mx-auto"
         />
         <p className="ekam-eyebrow mt-3 text-[10px] font-semibold text-[var(--ov-ink-4)]">
           One network infinite aspirations
