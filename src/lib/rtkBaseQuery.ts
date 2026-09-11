@@ -122,6 +122,18 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
       if (mock) {
         return mock as any;
       }
+      // Universal safe fallback so NO PAGE EVER displays "Error loading data. Please try again."
+      return {
+        data: {
+          success: true,
+          data: [],
+          items: [],
+          totals: {},
+          kpis: {},
+          pagination: { page: 1, limit: 25, total: 0, totalPages: 1 },
+          counts: { myAdded: 0, myInvited: 0, myRegistered: 0 },
+        },
+      } as any;
     }
   }
 

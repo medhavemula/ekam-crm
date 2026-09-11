@@ -2,7 +2,8 @@
  * Fallback dataset for static preview environments (such as GitHub Pages)
  * where the backend server's CORS configuration restricts browser requests.
  * Contains the snapshot from the live production database so all metrics,
- * charts, filters, and records render accurately instead of displaying zeros.
+ * charts, filters, and records render accurately instead of displaying zeros
+ * or "Error loading data" banners.
  */
 
 export function getMockFallbackResponse(urlStr: string, params?: any): { data: any } | null {
@@ -126,6 +127,288 @@ export function getMockFallbackResponse(urlStr: string, params?: any): { data: a
           ],
           roles: ["COUNTRY_ADMIN", "EXECUTIVE_DIRECTOR", "REGIONAL_DIRECTOR", "ASSISTANT_REGIONAL_DIRECTOR"],
         },
+      },
+    };
+  }
+
+  // ED Opportunities (Admin Business Opportunity report)
+  if (url.startsWith("admin/ed/opportunities") || url.startsWith("admin/ed/business-opportunities")) {
+    return {
+      data: {
+        success: true,
+        kpis: { totalMembers: 5, businessClosedTotal: 132000 },
+        chapter: null,
+        region: null,
+        dateRange: { from: null, to: null },
+        items: [
+          {
+            borDate: "2026-09-11T11:03:45.282Z",
+            fromName: "Mohammad Maheen",
+            phone: "6309483357",
+            email: "saitejagarabapu@gmail.com",
+            referredToName: "Darshan",
+            lastUpdated: "2026-09-11T11:03:45.282Z",
+            status: "Not Contacted",
+            businessClosed: 0,
+            comments: "New prospective contract discussion",
+          },
+          {
+            borDate: "2026-09-11T08:19:14.429Z",
+            fromName: "Van dutch",
+            phone: "9876543233",
+            email: "darshangajbhiye@myyahoo.com",
+            referredToName: "Darshan",
+            lastUpdated: "2026-09-11T08:24:20.063Z",
+            status: "Got Business",
+            businessClosed: 100000,
+            comments: "Kitchen supplies wholesale contract",
+          },
+          {
+            borDate: "2026-09-10T12:29:48.467Z",
+            fromName: "Darshan",
+            phone: "08880333777",
+            email: "varshikatbc@gmail.com",
+            referredToName: "Akhil Albert",
+            lastUpdated: "2026-09-10T12:29:48.467Z",
+            status: "Not Contacted",
+            businessClosed: 0,
+            comments: "Interior sheet design collaboration",
+          },
+          {
+            borDate: "2026-09-10T12:29:03.479Z",
+            fromName: "Darshan",
+            phone: "08880333777",
+            email: "varshikatbc@gmail.com",
+            referredToName: "Van dutch",
+            lastUpdated: "2026-09-10T12:29:03.479Z",
+            status: "Not Contacted",
+            businessClosed: 0,
+            comments: "Food truck fabrication",
+          },
+          {
+            borDate: "2026-09-10T11:01:08.456Z",
+            fromName: "Mahendra",
+            phone: "98765432",
+            email: "thebrandchimpchatgpt@gmail.com",
+            referredToName: "Darshan",
+            lastUpdated: "2026-09-10T11:01:08.456Z",
+            status: "Got Business",
+            businessClosed: 12000,
+            comments: "Branding materials",
+          },
+          {
+            borDate: "2026-09-09T12:04:13.118Z",
+            fromName: "Van dutch",
+            phone: "9876543233",
+            email: "darshangajbhiye@myyahoo.com",
+            referredToName: "Darshan",
+            lastUpdated: "2026-09-09T12:05:01.582Z",
+            status: "Got Business",
+            businessClosed: 20000,
+            comments: "Catering setup",
+          },
+        ],
+        pagination: { page: 1, limit: 25, total: 6 },
+      },
+    };
+  }
+
+  // Opportunities (Business Opportunities Given/Received/Closed)
+  if (url.startsWith("opportunities")) {
+    return {
+      data: {
+        success: true,
+        data: [
+          {
+            id: "opp-001",
+            createdAt: "2026-09-11T08:19:14.429Z",
+            closedAt: "2026-09-11T08:24:20.063Z",
+            amount: 100000,
+            opportunitySource: "Internal Member",
+            comments: "Kitchen supplies wholesale contract",
+            creditedGiver: { name: "Van dutch" },
+            receiver: { name: "Darshan" },
+            status: "WON",
+            contact: { name: "Van dutch", phone: "9876543233", email: "darshangajbhiye@myyahoo.com" },
+          },
+          {
+            id: "opp-002",
+            createdAt: "2026-09-09T12:04:13.118Z",
+            closedAt: "2026-09-09T12:05:01.582Z",
+            amount: 20000,
+            opportunitySource: "Internal Member",
+            comments: "Catering setup consulting",
+            creditedGiver: { name: "Van dutch" },
+            receiver: { name: "Darshan" },
+            status: "WON",
+            contact: { name: "Van dutch", phone: "9876543233", email: "darshangajbhiye@myyahoo.com" },
+          },
+          {
+            id: "opp-003",
+            createdAt: "2026-09-10T11:01:08.456Z",
+            closedAt: "2026-09-10T11:01:08.456Z",
+            amount: 12000,
+            opportunitySource: "Referral",
+            comments: "Branding materials package",
+            creditedGiver: { name: "Mahendra" },
+            receiver: { name: "Darshan" },
+            status: "WON",
+            contact: { name: "Mahendra", phone: "98765432" },
+          },
+        ],
+        page: 1,
+        pageSize: 10,
+        total: 3,
+      },
+    };
+  }
+
+  // P2P Meetings (Peer to Peer)
+  if (url.startsWith("p2p")) {
+    return {
+      data: {
+        success: true,
+        data: [
+          {
+            _id: "p2p-001",
+            id: 1,
+            date: "2026-09-08T10:00:00.000Z",
+            meetWith: "Darshan",
+            initiatedBy: "Van dutch",
+            location: "Himaythnagar, Hyderabad",
+            topic: "Strategic Franchise Expansion & Suppliers",
+            status: "COMPLETED",
+            recordId: "p2p-001",
+          },
+          {
+            _id: "p2p-002",
+            id: 2,
+            date: "2026-09-05T14:30:00.000Z",
+            meetWith: "Akhil Albert",
+            initiatedBy: "Mohammad Maheen",
+            location: "Borivali, Mumbai",
+            topic: "Software Platform Testing & Deployment",
+            status: "COMPLETED",
+            recordId: "p2p-002",
+          },
+        ],
+        page: 1,
+        limit: 10,
+        total: 2,
+      },
+    };
+  }
+
+  // Many To One (M2O)
+  if (url.startsWith("m2o") || url.startsWith("admin/ed/m2o")) {
+    return {
+      data: {
+        success: true,
+        data: [
+          {
+            _id: "m2o-001",
+            id: 1,
+            date: "2026-09-07T11:00:00.000Z",
+            presenter: "Darshan",
+            chapter: "alice",
+            topic: "Annual Business Goals & Growth Plan",
+            attendeesCount: 5,
+            status: "COMPLETED",
+          },
+        ],
+        page: 1,
+        limit: 10,
+        total: 1,
+      },
+    };
+  }
+
+  // Meetings
+  if (url.startsWith("meetings") || url.startsWith("admin/ed/meetings")) {
+    return {
+      data: {
+        success: true,
+        data: [
+          {
+            id: "meeting-001",
+            date: "2026-09-25T00:00:00.000Z",
+            startTime: "09:00",
+            venue: "Hyatt Place, Hyderabad",
+            mode: "IN_PERSON",
+            type: "ALTERNATE",
+            status: "DRAFT",
+            members: 4,
+            present: 4,
+            late: 0,
+            absent: 0,
+            visitors: 5,
+            p2p: 2,
+            businessClosed: 132000,
+            testimonials: 6,
+          },
+          {
+            id: "meeting-002",
+            date: "2026-09-11T00:00:00.000Z",
+            startTime: "09:00",
+            venue: "Regus Boardroom, Mumbai",
+            mode: "IN_PERSON",
+            type: "ALTERNATE",
+            status: "COMPLETED",
+            members: 4,
+            present: 4,
+            late: 0,
+            absent: 0,
+            visitors: 1,
+            p2p: 2,
+            businessClosed: 100000,
+            testimonials: 4,
+          },
+        ],
+        nextMeeting: null,
+        page: 1,
+        pageSize: 10,
+        total: 2,
+      },
+    };
+  }
+
+  // Visitors
+  if (url.startsWith("visitors") || url.startsWith("admin/ed/visitors")) {
+    return {
+      data: {
+        success: true,
+        data: [
+          {
+            id: "vis-001",
+            chapterId: "6a911fa5a8ef4664d39e80a0",
+            chapterName: "alice",
+            visitorName: "Sai Teja",
+            email: "sgarabapu@gmail.com",
+            phone: "6305887411",
+            visitDate: "2026-09-25T00:00:00.000Z",
+            company: "Tech Infra Solutions",
+            category: "Cloud Engineering",
+            status: "REGISTERED",
+            invitedByName: "Mohammad Maheen",
+          },
+          {
+            id: "vis-002",
+            chapterId: "6a911fa5a8ef4664d39e80a0",
+            chapterName: "alice",
+            visitorName: "Albert Lincolin",
+            email: "joifiber@gmail.com",
+            phone: "9876543234",
+            visitDate: "2026-09-25T00:00:00.000Z",
+            company: "Fiber Networks",
+            category: "Telecommunications",
+            status: "REGISTERED",
+            invitedByName: "Darshan",
+          },
+        ],
+        page: 1,
+        pageSize: 10,
+        total: 2,
+        counts: { myAdded: 0, myInvited: 2, myRegistered: 2 },
       },
     };
   }
