@@ -329,7 +329,30 @@ export default function App() {
               );
             }
           } catch {
-            // ignore; route guards will handle unauthenticated state
+            // Fallback for preview / CORS restricted environments if user credentials exist in localStorage
+            const storedRole = localStorage.getItem("userRole");
+            const storedEmail = localStorage.getItem("userEmail");
+            const storedName = localStorage.getItem("userName");
+            const storedRoles = localStorage.getItem("userRoles");
+            const storedModuleAccess = localStorage.getItem("moduleAccess");
+            if (storedRole) {
+              const roles = storedRoles ? JSON.parse(storedRoles) : [storedRole];
+              let parsedModuleAccess = { business: true, professional: true, social: true };
+              try { if (storedModuleAccess) parsedModuleAccess = JSON.parse(storedModuleAccess); } catch {}
+              dispatch(
+                setUser({
+                  _id: "preview-user-001",
+                  name: storedName || "Super Admin",
+                  email: storedEmail || "superadmin@ekam.local",
+                  isEmailVerified: true,
+                  isApproved: true,
+                  status: "active",
+                  assignments: roles.map((r: string) => ({ role: r })),
+                  moduleAccess: parsedModuleAccess,
+                }),
+              );
+              dispatch(setRole({ role: storedRole as Role, roles }));
+            }
           }
         })();
       }

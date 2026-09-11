@@ -4,7 +4,7 @@ import { initializeTokenRefresh, clearTokenRefreshTimer, expireIdleSession } fro
 import { isSessionIdleExpired } from "./idleSession";
 
 // Cookie-only auth base query: always send cookies; on 401, call refresh and retry once.
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_BASE_URL || "https://dev-api.ekamnetwork.com/api/v1";
 
 // Initialize token refresh monitoring
 initializeTokenRefresh();
