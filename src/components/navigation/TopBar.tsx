@@ -177,8 +177,9 @@ export const TopBar: React.FC<TopBarProps> = ({
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("userName");
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      window.location.replace("/login");
+      const basePath = import.meta.env.BASE_URL || "/";
+      const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+      window.location.replace(`${normalizedBase}login`);
     }
   };
 

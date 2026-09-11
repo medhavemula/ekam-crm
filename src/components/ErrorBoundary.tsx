@@ -34,7 +34,11 @@ class ErrorBoundary extends Component<Props, State> {
               {this.state.error?.message || "An unexpected error occurred"}
             </p>
             <button
-              onClick={() => window.location.href = "/login"}
+              onClick={() => {
+                const basePath = import.meta.env.BASE_URL || "/";
+                const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+                window.location.href = `${normalizedBase}login`;
+              }}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
             >
               Go to Login

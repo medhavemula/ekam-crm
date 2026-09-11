@@ -18,8 +18,10 @@ export function expireIdleSession() {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("isLoggedIn");
   } catch {}
-  if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
-    window.location.href = "/login?expired=1";
+  const basePath = import.meta.env.BASE_URL || "/";
+  const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+  if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+    window.location.href = `${normalizedBase}login?expired=1`;
   }
 }
 
@@ -96,7 +98,9 @@ export function scheduleTokenRefresh(accessToken: string, refreshToken: string) 
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('isLoggedIn');
-        window.location.href = '/login';
+        const basePath = import.meta.env.BASE_URL || "/";
+        const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+        window.location.href = `${normalizedBase}login`;
       }
     } catch (error) {
       console.error('Proactive token refresh failed:', error);
@@ -104,7 +108,9 @@ export function scheduleTokenRefresh(accessToken: string, refreshToken: string) 
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('isLoggedIn');
-      window.location.href = '/login';
+      const basePath = import.meta.env.BASE_URL || "/";
+      const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+      window.location.href = `${normalizedBase}login`;
     } finally {
       isRefreshing = false;
     }

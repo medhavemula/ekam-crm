@@ -233,7 +233,9 @@ export const NavbarTop: React.FC<NavbarTopProps> = ({
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       // Force a full refresh to clear any in-memory caches/state
-      window.location.replace("/login");
+      const basePath = import.meta.env.BASE_URL || "/";
+      const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+      window.location.replace(`${normalizedBase}login`);
     }
   };
 
