@@ -57,9 +57,10 @@ export const AuthCard: React.FC<{
         // photograph below loads. Covered once it does.
         backgroundColor: "#0B1220",
         backgroundImage:
-          `linear-gradient(rgba(11,18,32,0.85), rgba(11,18,32,0.85)), url('${bgImg}')`,
+          `linear-gradient(rgba(11,18,32,0.72), rgba(11,18,32,0.78)), url('${bgImg}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
     <div className="w-full max-w-md">
