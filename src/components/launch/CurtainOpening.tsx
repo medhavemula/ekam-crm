@@ -586,7 +586,7 @@ export const CurtainOpening: React.FC<CurtainOpeningProps> = ({
                   </div>
                   <div className="flex justify-center">
                     <img
-                      src="/EKAMLogo.png"
+                      src={`${import.meta.env.BASE_URL}EKAMLogo.png`}
                       alt="Ekam Logo"
                       className="h-28 md:h-36 object-contain"
                     />

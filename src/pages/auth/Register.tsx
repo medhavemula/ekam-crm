@@ -470,7 +470,7 @@ export default function Register() {
         // The scrim's own colour, so the page is not a washed grey while the
         // photograph below loads. Covered once it does.
         backgroundColor: "#0B1220",
-        backgroundImage: "linear-gradient(rgba(11,18,32,0.9), rgba(11,18,32,0.9)), url('/auth-bg.jpg')",
+        backgroundImage: `linear-gradient(rgba(11,18,32,0.9), rgba(11,18,32,0.9)), url('${import.meta.env.BASE_URL}auth-bg.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -480,7 +480,7 @@ export default function Register() {
           {/* Header with Logo */}
           <div className="w-full bg-[#E9EEF1] flex flex-col items-center justify-center rounded-t-2xl">
             <img
-              src="/ekam-logo2.png"
+              src={`${import.meta.env.BASE_URL}ekam-logo2.png`}
               alt="Ekam Logo"
               className="block h-24 md:h-28 object-contain m-0 p-0 leading-none"
               style={{ display: "block", marginBottom: "-10px" }}

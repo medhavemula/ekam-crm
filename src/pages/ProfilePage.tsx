@@ -175,7 +175,7 @@ export default function ProfilePage() {
     <div
       className="min-h-screen"
       style={{
-        backgroundImage: "url('/auth-bg.jpg')",
+        backgroundImage: `url('${import.meta.env.BASE_URL}auth-bg.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

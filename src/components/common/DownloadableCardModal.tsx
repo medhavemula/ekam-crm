@@ -99,7 +99,7 @@ export function EkamCardHeader({ title }: { title: string }) {
   return (
     <div style={{ backgroundColor: "#D85D27", padding: "16px 24px", textAlign: "center" }}>
       <img
-        src="/EKAMLogo.png"
+        src={`${import.meta.env.BASE_URL}EKAMLogo.png`}
         alt="EKAM"
         style={{ height: "40px", margin: "0 auto 8px auto", display: "block" }}
         onError={(e) => {

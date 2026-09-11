@@ -269,20 +269,12 @@ export const NavbarTop: React.FC<NavbarTopProps> = ({
             className="flex shrink-0 items-center rounded-lg leading-none transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ov-ember)]"
             aria-label="Go to Dashboard"
           >
-            <span
-              aria-label="E.K.A.M"
-              role="img"
-              className={`block shrink-0 select-none bg-no-repeat transition-[height,width] duration-300 ${
+            <img
+              src={`${import.meta.env.BASE_URL}EKAMLogo-navy.png`}
+              alt="E.K.A.M"
+              className={`block shrink-0 select-none object-contain object-left transition-[height,width] duration-300 ${
                 scrolled ? "h-5 w-[76px]" : "h-6.5 w-[96px]"
               }`}
-              style={{
-                backgroundImage: "var(--nav-logo)",
-                backgroundSize: "contain",
-                backgroundPosition: "left center",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-                transform: "translateZ(0)",
-              }}
             />
           </button>
 

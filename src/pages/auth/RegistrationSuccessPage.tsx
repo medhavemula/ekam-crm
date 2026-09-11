@@ -9,13 +9,13 @@ export default function RegistrationSuccessPage() {
         // photograph below loads. Covered once it does.
         backgroundColor: "#0B1220",
         backgroundImage:
-          "linear-gradient(rgba(11,18,32,0.9), rgba(11,18,32,0.9)), url('/auth-bg.jpg')",
+          `linear-gradient(rgba(11,18,32,0.9), rgba(11,18,32,0.9)), url('${import.meta.env.BASE_URL}auth-bg.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
       <div className="w-full max-w-7xl">
-        <RegistrationSuccess illustrationSrc="/success-illustration.png" />
+        <RegistrationSuccess illustrationSrc={`${import.meta.env.BASE_URL}success-illustration.png`} />
       </div>
     </div>
   );

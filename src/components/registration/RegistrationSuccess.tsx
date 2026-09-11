@@ -32,7 +32,7 @@ const RegistrationSuccess: FC<Props> = ({ illustrationSrc = "/success-illustrati
     <div className="w-full shadow-2xl overflow-hidden rounded-2xl">
       <div className="w-full bg-[#E9EEF1] flex flex-col items-center justify-center rounded-t-2xl">
         <img
-          src="/ekam-logo2.png"
+          src={`${import.meta.env.BASE_URL}ekam-logo2.png`}
           alt="Ekam Logo"
           className="block h-24 md:h-28 object-contain m-0 p-0 leading-none"
           style={{ display: "block", marginBottom: "-10px" }}

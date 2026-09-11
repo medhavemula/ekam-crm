@@ -47,19 +47,21 @@ export const AuthCard: React.FC<{
   children: React.ReactNode;
   /** Links below the panel, outside the card's own reading order. */
   footer?: React.ReactNode;
-}> = ({ title, caption, icon, children, footer }) => (
-  <div
-    className="flex min-h-screen items-center justify-center p-4 md:p-6"
-    style={{
-      // The scrim's own colour, so the page is not a washed grey while the
-      // photograph below loads. Covered once it does.
-      backgroundColor: "#0B1220",
-      backgroundImage:
-        "linear-gradient(rgba(11,18,32,0.85), rgba(11,18,32,0.85)), url('/auth-bg.jpg')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }}
-  >
+}> = ({ title, caption, icon, children, footer }) => {
+  const bgImg = `${import.meta.env.BASE_URL}auth-bg.jpg`;
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center p-4 md:p-6"
+      style={{
+        // The scrim's own colour, so the page is not a washed grey while the
+        // photograph below loads. Covered once it does.
+        backgroundColor: "#0B1220",
+        backgroundImage:
+          `linear-gradient(rgba(11,18,32,0.85), rgba(11,18,32,0.85)), url('${bgImg}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
     <div className="w-full max-w-md">
       <div className="mb-7 flex flex-col items-center">
         <img
@@ -100,6 +102,7 @@ export const AuthCard: React.FC<{
       )}
     </div>
   </div>
-);
+  );
+};
 
 export default AuthCard;
