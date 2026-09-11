@@ -97,6 +97,38 @@ export function getMockFallbackResponse(urlStr: string, params?: any): { data: a
     };
   }
 
+  // Notifications counters
+  if (url.startsWith("notifications/counters") || url.startsWith("notifications/unread-count")) {
+    return {
+      data: {
+        success: true,
+        data: {
+          unreadCount: 0,
+          total: 0,
+        },
+      },
+    };
+  }
+
+  // User Profile Roles
+  if (url.startsWith("user/profile/roles")) {
+    const storedRole = (typeof localStorage !== "undefined" && localStorage.getItem("userRole")) || "SUPER_ADMIN";
+    return {
+      data: {
+        success: true,
+        data: {
+          user: {
+            id: "demo-user-001",
+            name: "Super Admin",
+            email: "superadmin@ekam.local",
+          },
+          assignments: [{ role: storedRole, isPrimary: true }],
+          primaryRole: { role: storedRole, isPrimary: true },
+        },
+      },
+    };
+  }
+
   // Super Admin KPIs
   if (url.startsWith("admin/kpis")) {
     return {
