@@ -201,7 +201,16 @@ const AdminCreateGroupPage = lazyPage(() => import("./pages/groups/admin/AdminCr
 
 // Guest-only guard: redirects authenticated users to /dashboard
 function GuestOnly({ children }: { children: ReactElement }) {
-  const isAuthed = typeof window !== "undefined" && !!localStorage.getItem("accessToken");
+  const search = typeof window !== "undefined" ? window.location.search : "";
+  const isForcedLogin = search.includes("logout=1") || search.includes("mode=login");
+  if (isForcedLogin && typeof localStorage !== "undefined") {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userRoles");
+  }
+  const isAuthed = !isForcedLogin && typeof window !== "undefined" && !!localStorage.getItem("accessToken");
   const mustChange = typeof window !== "undefined" && localStorage.getItem("mustChangePassword") === "true";
   if (isAuthed && mustChange) return <Navigate to="/change-password" replace />;
   if (isAuthed && !mustChange) return <Navigate to="/dashboard" replace />;

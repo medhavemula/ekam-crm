@@ -51,7 +51,7 @@ export const AuthCard: React.FC<{
   const bgImg = `${import.meta.env.BASE_URL}auth-bg.jpg`;
   return (
     <div
-      className="flex min-h-screen items-center justify-center p-4 md:p-6"
+      className="flex min-h-screen flex-col items-center justify-center p-4 md:p-6 pt-8 pb-20"
       style={{
         // The scrim's own colour, so the page is not a washed grey while the
         // photograph below loads. Covered once it does.
