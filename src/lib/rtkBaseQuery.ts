@@ -2,6 +2,7 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryApi, BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { initializeTokenRefresh, clearTokenRefreshTimer, expireIdleSession } from "./tokenRefresh";
 import { isSessionIdleExpired } from "./idleSession";
+import { getMockFallbackResponse } from "./mockApiFallback";
 
 // Cookie-only auth base query: always send cookies; on 401, call refresh and retry once.
 const baseUrl = import.meta.env.VITE_API_BASE_URL || "https://dev-api.ekamnetwork.com/api/v1";
@@ -106,6 +107,22 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
         result = await rawBaseQuery(args, api, extraOptions);
       }
     } catch {}
+  }
+
+  if (result.error) {
+    const isNetworkOrCorsError =
+      result.error.status === "FETCH_ERROR" ||
+      result.error.status === "TIMEOUT_ERROR" ||
+      (typeof window !== "undefined" && window.location.hostname.includes("github.io"));
+
+    if (isNetworkOrCorsError) {
+      const urlStr = typeof args === "string" ? args : (args && args.url ? args.url : "");
+      const params = typeof args === "object" ? (args as any).params : undefined;
+      const mock = getMockFallbackResponse(urlStr, params);
+      if (mock) {
+        return mock as any;
+      }
+    }
   }
 
   return result;
