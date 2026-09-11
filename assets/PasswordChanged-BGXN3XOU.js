@@ -1,0 +1,1 @@
+import{u as t,j as s,A as a,h as o,v as i}from"./index-B9HXk9-J.js";function r(){const n=t();return s.jsx(a,{icon:s.jsx(i,{}),title:"Password changed",caption:"You can sign in with your new password now.",children:s.jsx("button",{type:"button",onClick:()=>n("/login"),className:`mt-7 ${o}`,children:"Go to sign in"})})}export{r as default};
