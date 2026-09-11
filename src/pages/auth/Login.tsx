@@ -266,6 +266,7 @@ export default function Login() {
           assignments: [{ role: assignedRole }],
           moduleAccess: { business: true, professional: true, social: true },
         };
+        recordActivity();
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userEmail", normalizedEmail);
         localStorage.setItem("userName", demoUser.name);

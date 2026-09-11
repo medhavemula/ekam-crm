@@ -80,6 +80,9 @@ export function clearActivity(): void {
 
 /** Has the session been idle long enough that it should not be renewed? */
 export function isSessionIdleExpired(): boolean {
+  if (typeof window !== "undefined" && window.location.hostname.includes("github.io")) {
+    return false;
+  }
   return idleStateAt(getLastActivity(), Date.now()) === "expired";
 }
 
@@ -102,6 +105,11 @@ export function startIdleTracking(handlers: {
   onExpire: () => void;
 }): () => void {
   stopIdleTracking();
+
+  // On static preview environments (e.g. GitHub Pages), do not auto-expire idle sessions
+  if (typeof window !== "undefined" && window.location.hostname.includes("github.io")) {
+    return () => {};
+  }
 
   let lastWrite = 0;
   let warned = false;
